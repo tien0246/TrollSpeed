@@ -102,7 +102,7 @@ jobs:
           rm -rf .theos/_/usr/local/bin || true
           
           # Chạy build
-          FINALPACKAGE=1 make package
+          THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1 make package
 
       - name: Upload TIPA file
         uses: actions/upload-artifact@v4
