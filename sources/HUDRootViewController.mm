@@ -766,7 +766,6 @@ static const CACornerMask kCornerMaskAll = kCALayerMinXMinYCorner | kCALayerMaxX
         }];
 #endif
     }
-    NSLog(@"=======================HUDRootViewController init");
     return self;
 }
 
@@ -792,51 +791,51 @@ static const CACornerMask kCornerMaskAll = kCALayerMinXMinYCorner | kCALayerMaxX
     [super viewDidLoad];
     /* Just put your HUD view here */
 
-    _contentView = [[UIView alloc] init];
-    _contentView.backgroundColor = [UIColor clearColor];
-    _contentView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:_contentView];
+    // _contentView = [[UIView alloc] init];
+    // _contentView.backgroundColor = [UIColor clearColor];
+    // _contentView.translatesAutoresizingMaskIntoConstraints = NO;
+    // [self.view addSubview:_contentView];
 
-    _blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-    _blurView = [[UIVisualEffectView alloc] initWithEffect:_blurEffect];
-    _blurView.layer.cornerRadius = HUD_MIN_CORNER_RADIUS;
-    _blurView.layer.masksToBounds = YES;
-    _blurView.translatesAutoresizingMaskIntoConstraints = NO;
-    _containerView = [[ScreenshotInvisibleContainer alloc] initWithContent:_blurView];
-    _containerView.hiddenContainer.translatesAutoresizingMaskIntoConstraints = NO;
-    [_contentView addSubview:_containerView.hiddenContainer];
+    // _blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+    // _blurView = [[UIVisualEffectView alloc] initWithEffect:_blurEffect];
+    // _blurView.layer.cornerRadius = HUD_MIN_CORNER_RADIUS;
+    // _blurView.layer.masksToBounds = YES;
+    // _blurView.translatesAutoresizingMaskIntoConstraints = NO;
+    // _containerView = [[ScreenshotInvisibleContainer alloc] initWithContent:_blurView];
+    // _containerView.hiddenContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    // [_contentView addSubview:_containerView.hiddenContainer];
 
-    _speedLabel = [[HUDBackdropLabel alloc] initWithFrame:CGRectZero];
-    _speedLabel.numberOfLines = 0;
-    _speedLabel.textAlignment = NSTextAlignmentCenter;
-    _speedLabel.textColor = [UIColor whiteColor];
-    _speedLabel.font = [UIFont systemFontOfSize:HUD_FONT_SIZE];
-    _speedLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    [_speedLabel setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
-    [_blurView.contentView addSubview:_speedLabel];
+    // _speedLabel = [[HUDBackdropLabel alloc] initWithFrame:CGRectZero];
+    // _speedLabel.numberOfLines = 0;
+    // _speedLabel.textAlignment = NSTextAlignmentCenter;
+    // _speedLabel.textColor = [UIColor whiteColor];
+    // _speedLabel.font = [UIFont systemFontOfSize:HUD_FONT_SIZE];
+    // _speedLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    // [_speedLabel setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisVertical];
+    // [_blurView.contentView addSubview:_speedLabel];
 
-    _lockedView = [[UIImageView alloc] initWithImage:[UIImage systemImageNamed:@"lock.fill"]];
-    _lockedView.tintColor = [UIColor whiteColor];
-    _lockedView.translatesAutoresizingMaskIntoConstraints = NO;
-    _lockedView.contentMode = UIViewContentModeScaleAspectFit;
-    _lockedView.alpha = 0.0;
-    [_lockedView setContentHuggingPriority:UILayoutPriorityDefaultLow forAxis:UILayoutConstraintAxisVertical];
-    [_lockedView setContentCompressionResistancePriority:UILayoutPriorityDefaultLow forAxis:UILayoutConstraintAxisVertical];
-    [_blurView.contentView addSubview:_lockedView];
+    // _lockedView = [[UIImageView alloc] initWithImage:[UIImage systemImageNamed:@"lock.fill"]];
+    // _lockedView.tintColor = [UIColor whiteColor];
+    // _lockedView.translatesAutoresizingMaskIntoConstraints = NO;
+    // _lockedView.contentMode = UIViewContentModeScaleAspectFit;
+    // _lockedView.alpha = 0.0;
+    // [_lockedView setContentHuggingPriority:UILayoutPriorityDefaultLow forAxis:UILayoutConstraintAxisVertical];
+    // [_lockedView setContentCompressionResistancePriority:UILayoutPriorityDefaultLow forAxis:UILayoutConstraintAxisVertical];
+    // [_blurView.contentView addSubview:_lockedView];
 
-    _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureRecognized:)];
-    _tapGestureRecognizer.numberOfTapsRequired = 1;
-    _tapGestureRecognizer.numberOfTouchesRequired = 1;
-    [_contentView addGestureRecognizer:_tapGestureRecognizer];
+    // _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureRecognized:)];
+    // _tapGestureRecognizer.numberOfTapsRequired = 1;
+    // _tapGestureRecognizer.numberOfTouchesRequired = 1;
+    // [_contentView addGestureRecognizer:_tapGestureRecognizer];
 
-    _panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)];
-    _panGestureRecognizer.minimumNumberOfTouches = 1;
-    _panGestureRecognizer.maximumNumberOfTouches = 1;
-    [_contentView addGestureRecognizer:_panGestureRecognizer];
+    // _panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)];
+    // _panGestureRecognizer.minimumNumberOfTouches = 1;
+    // _panGestureRecognizer.maximumNumberOfTouches = 1;
+    // [_contentView addGestureRecognizer:_panGestureRecognizer];
 
-    [_contentView setUserInteractionEnabled:YES];
+    // [_contentView setUserInteractionEnabled:YES];
 
-    [self reloadUserDefaults];
+    // [self reloadUserDefaults];
 }
 
 - (void)viewDidAppear:(BOOL)animated
