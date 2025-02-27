@@ -1,18 +1,19 @@
-name: Build Release
+name: Build TrollSpeed
 
 on:
   push:
-    tags:
-      - "v*.*.*"
+    branches:
+      - main
+      - dev
+  workflow_dispatch:
 
 env:
   THEOS: ''
-  GIT_TAG: ''
   XCODE_VERSION: '14.3.1'
 
 jobs:
   build:
-    name: Build and upload release package for TrollStore
+    name: Build and Upload TIPA
     runs-on: macos-13
 
     steps:
@@ -20,6 +21,22 @@ jobs:
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ${{ env.XCODE_VERSION }}
+
+      - name: Checkout (Shallow Clone)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Cache Theos and Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/Library/Caches/Homebrew
+            ~/.theos
+            ${{ github.workspace }}/theos
+          key: ${{ runner.os }}-theos-${{ hashFiles('**/Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-theos-
 
       - name: Install Homebrew dependencies
         run: |
@@ -58,7 +75,7 @@ jobs:
           ref: master
           path: ${{ env.THEOS }}/sdks
 
-      - name: Checkout
+      - name: Checkout source
         uses: actions/checkout@v4
         with:
           repository: Lessica/TrollSpeed
@@ -66,50 +83,13 @@ jobs:
           path: TrollSpeed
           submodules: recursive
 
-      - name: Setup build environment
-        run: |
-          echo "Available SDKs: $(find $THEOS/sdks -name "*.sdk" -maxdepth 1 -print)"
-          echo "FINALPACKAGE=1" >> $GITHUB_ENV
-          cd $GITHUB_WORKSPACE/TrollSpeed
-          git fetch --tags
-          echo "GIT_TAG=$(git describe --tags --always --abbrev=0)" >> $GITHUB_ENV
-
-      - name: Build package
+      - name: Build TIPA (Faster)
         run: |
           cd $GITHUB_WORKSPACE/TrollSpeed
-          ./gen-control.sh ${{ env.GIT_TAG }}
-          ./build.sh ${{ env.GIT_TAG }}
-          THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1 make package
-          FINALPACKAGE=1 make clean
-          FINALPACKAGE=1 make package
+          THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1 make package FINALPACKAGE=1 make incremental
 
-      - name: Collect symbols
-        run: |
-          cd $GITHUB_WORKSPACE/TrollSpeed
-          find .theos/obj -name "*.dSYM" -print | zip -r packages/TrollSpeed_${{ env.GIT_TAG }}_symbols.zip -@
-
-      - name: Upload artifacts
+      - name: Upload TIPA file
         uses: actions/upload-artifact@v4
         with:
-          name: TrollSpeed_${{ env.GIT_TAG }}
-          path: |
-            TrollSpeed/packages/TrollSpeed_*.tipa
-            TrollSpeed/packages/TrollSpeed+AppIntents16_*.tipa
-            TrollSpeed/packages/ch.xxtou.hudapp.jb_*.deb
-
-      - name: Upload symbols
-        uses: actions/upload-artifact@v4
-        with:
-          name: TrollSpeed_${{ env.GIT_TAG }}_symbols
-          path: |
-            TrollSpeed/packages/TrollSpeed_${{ env.GIT_TAG }}_symbols.zip
-
-      - name: Upload release
-        uses: softprops/action-gh-release@v1
-        with:
-          token: ${{ secrets.RELEASE_GITHUB_TOKEN }}
-          body_path: TrollSpeed/CHANGELOG.md
-          files: |
-            TrollSpeed/packages/TrollSpeed_*.tipa
-            TrollSpeed/packages/TrollSpeed+AppIntents16_*.tipa
-            TrollSpeed/packages/ch.xxtou.hudapp.jb_*.deb
+          name: TrollSpeed_TIPA
+          path: TrollSpeed/packages/TrollSpeed_*.tipa
