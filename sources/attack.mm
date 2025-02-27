@@ -87,7 +87,7 @@ static vm_map_offset_t GetGameModule_Base(char* GameProcessName) {
                 label.text = [NSString stringWithFormat:@"%d", pid];
                 label.textColor = [UIColor redColor];
                 label.font = [UIFont systemFontOfSize:20];
-                [[UIApplication sharedApplication].keyWindow addSubview:label];
+                [[UIApplication sharedApplication].keyWindow.rootViewController.view addSubview:label];
             }
         });
     }];
