@@ -766,6 +766,7 @@ static const CACornerMask kCornerMaskAll = kCALayerMinXMinYCorner | kCALayerMaxX
         }];
 #endif
     }
+    NSLog(@"=======================HUDRootViewController init");
     return self;
 }
 
