@@ -27,7 +27,7 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Cache Theos, Homebrew, and Build Artifacts
+      - name: Cache Theos, Homebrew, and Make Build Artifacts
         uses: actions/cache@v3
         with:
           path: |
@@ -35,9 +35,10 @@ jobs:
             ~/.theos
             ${{ github.workspace }}/theos
             ${{ github.workspace }}/TrollSpeed/.theos
-          key: ${{ runner.os }}-theos-${{ hashFiles('**/Makefile') }}
+            ${{ github.workspace }}/TrollSpeed/.obj
+          key: ${{ runner.os }}-make-cache-${{ hashFiles('TrollSpeed/Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-theos-
+            ${{ runner.os }}-make-cache-
 
       - name: Install Homebrew dependencies
         run: |
@@ -84,7 +85,7 @@ jobs:
           path: TrollSpeed
           submodules: recursive
 
-      - name: Verify Theos and Makefile
+      - name: Debug: Verify Theos and Makefile
         run: |
           cd $GITHUB_WORKSPACE/TrollSpeed
           echo "📂 Listing files in working directory:"
@@ -99,16 +100,21 @@ jobs:
           cd $GITHUB_WORKSPACE/TrollSpeed
           echo "🚀 Starting build..."
 
-          # Remove conflicting directories if they exist
           rm -rf .theos/_/usr/local/bin || true
 
-          # Build package using cached files
           THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1 make package
+
+      - name: Rename TIPA File
+        run: |
+          cd $GITHUB_WORKSPACE/TrollSpeed/packages
+          TIPAFILE=$(ls TrollSpeed_*.tipa | head -n 1)
+          mv "$TIPAFILE" "TrollSpeed.tipa"
+          echo "Renamed $TIPAFILE to TrollSpeed.tipa"
 
       - name: Upload TIPA to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: TrollSpeed/packages/TrollSpeed_*.tipa
+          files: TrollSpeed/packages/TrollSpeed.tipa
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: latest
           name: "Latest TIPA Release"
