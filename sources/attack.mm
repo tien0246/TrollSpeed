@@ -83,19 +83,11 @@ static vm_map_offset_t GetGameModule_Base(char* GameProcessName) {
             if (pid) {
                 NSLog(@"=================================================%d", pid);
                 //  show pid on view
-                UIView * _pidview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
-                _pidview.backgroundColor = [UIColor redColor];
-                _pidview.layer.cornerRadius = 10;
-                _pidview.layer.masksToBounds = YES;
-                _pidview.center = self.view.center;
-                [self.view addSubview:_pidview];
                 UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
                 label.text = [NSString stringWithFormat:@"%d", pid];
-                label.textColor = [UIColor whiteColor];
-                label.textAlignment = NSTextAlignmentCenter;
-                label.center = CGPointMake(_pidview.frame.size.width / 2, _pidview.frame.size.height / 2);
-                [_pidview addSubview:label];
-                [getpidpro invalidate];
+                label.textColor = [UIColor redColor];
+                label.font = [UIFont systemFontOfSize:20];
+                [[UIApplication sharedApplication].keyWindow addSubview:label];
             }
         });
     }];
