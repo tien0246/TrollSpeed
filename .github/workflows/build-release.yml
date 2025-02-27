@@ -13,7 +13,7 @@ env:
 
 jobs:
   build:
-    name: Build & Upload TIPA
+    name: Fast Build & Direct Download
     runs-on: macos-13
 
     steps:
@@ -27,30 +27,30 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Cache Theos
+        uses: actions/cache@v3
+        with:
+          path: ~/.theos
+          key: ${{ runner.os }}-theos-${{ hashFiles('**/Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-theos-
+
       - name: Install Homebrew dependencies
         run: |
-          brew install dpkg make libplist openssl@3 ldid
-          echo "/usr/local/opt/make/libexec/gnubin" >> $GITHUB_PATH
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install dpkg make libplist openssl@3
 
       - name: Checkout Theos
         uses: actions/checkout@v4
         with:
-          repository: theos/theos
-          ref: master
+          repository: XXTouchNG/theos
+          ref: 78ee784d8d3238982c9abdc58cd39919263648b1
           path: theos
           submodules: recursive
 
-      - name: Manually Install Theos SDKs
-        run: |
-          cd $GITHUB_WORKSPACE/theos
-          mkdir -p sdks
-          curl -LO https://github.com/theos/sdks/raw/master/iPhoneOS16.2.sdk.tar.xz
-          tar -xf iPhoneOS16.2.sdk.tar.xz -C sdks
-          rm iPhoneOS16.2.sdk.tar.xz
-          echo "THEOS=$GITHUB_WORKSPACE/theos" >> $GITHUB_ENV
-          echo "SDKROOT=$GITHUB_WORKSPACE/theos/sdks/iPhoneOS16.2.sdk" >> $GITHUB_ENV
+      - name: Set Theos Environment
+        run: echo "THEOS=$GITHUB_WORKSPACE/theos" >> $GITHUB_ENV
 
-      - name: Checkout source
+      - name: Checkout Source Code
         uses: actions/checkout@v4
         with:
           repository: Lessica/TrollSpeed
@@ -58,19 +58,15 @@ jobs:
           path: TrollSpeed
           submodules: recursive
 
-      - name: Build TIPA (Fixed)
+      - name: Build TIPA
         run: |
           cd $GITHUB_WORKSPACE/TrollSpeed
-          echo "🚀 Starting fast build..."
+          echo "🚀 Building TIPA..."
           THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1 make package
 
-      - name: Upload TIPA to GitHub Releases
-        uses: softprops/action-gh-release@v1
+      - name: Upload TIPA file (Direct Download)
+        uses: actions/upload-artifact@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: TrollSpeed/packages/TrollSpeed_*.tipa
-          tag_name: latest
-          name: "TrollSpeed Latest Build"
-          body: "Click below to download the latest TIPA file."
-          draft: false
-          prerelease: false
+          name: TrollSpeed_TIPA
+          path: TrollSpeed/packages/TrollSpeed_*.tipa
+          retention-days: 3  # Set shorter retention time for faster cleanup
