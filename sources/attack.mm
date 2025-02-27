@@ -1,0 +1,61 @@
+#import <mach-o/dyld.h>
+#import <mach-o/loader.h>
+#import <mach-o/getsect.h>
+#import <mach/mach.h>
+#import <mach-o/dyld_images.h>
+
+#include <iostream>
+#include <unistd.h>
+#include <stdio.h>
+#include <vector>
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
+
+#include <sys/types.h>
+#include <sys/sysctl.h>
+
+static NSTimer *getpidpro;
+
+extern "C" kern_return_t mach_vm_region_recurse(
+                                                vm_map_t                 map,
+                                                mach_vm_address_t        *address,
+                                                mach_vm_size_t           *size,
+                                                uint32_t                 *depth,
+                                                vm_region_recurse_info_t info,
+                                                mach_msg_type_number_t   *infoCnt);
+
+static pid_t GetGameProcesspid(char* GameProcessName) {
+    size_t length = 0;
+    static const int name[] = {CTL_KERN, KERN_PROC, KERN_PROC_ALL, 0};
+    int err = sysctl((int *)name, (sizeof(name) / sizeof(*name)) - 1, NULL, &length, NULL, 0);
+    if (err == -1) err = errno;
+    if (err == 0) {
+        struct kinfo_proc *procBuffer = (struct kinfo_proc *)malloc(length);
+        if(procBuffer == NULL) return -1;
+        sysctl((int *)name, (sizeof(name) / sizeof(*name)) - 1, procBuffer, &length, NULL, 0);
+        int count = (int)length / sizeof(struct kinfo_proc);
+        for (int i = 0; i < count; ++i) {
+            const char *procname = procBuffer[i].kp_proc.p_comm;
+            Processpid = procBuffer[i].kp_proc.p_pid;
+            if(strstr(procname,GameProcessName)){
+                return Processpid;
+            }
+        }
+    }
+    return  -1;
+}
+
+static vm_map_offset_t GetGameModule_Base(char* GameProcessName) {
+    vm_map_offset_t vmoffset = 0;
+    vm_map_size_t vmsize = 0;
+    uint32_t nesting_depth = 0;
+    struct vm_region_submap_info_64 vbr;
+    mach_msg_type_number_t vbrcount = 16;
+    pid_t pid = MsdnGetGameProcesspid(GameProcessName);
+    kern_return_t kret = task_for_pid(mach_task_self(), pid, &get_task);
+    if (kret == KERN_SUCCESS) {
+        mach_vm_region_recurse(get_task, &vmoffset, &vmsize, &nesting_depth, (vm_region_recurse_info_t)&vbr, &vbrcount);
+    }
+    return vmoffset;
+}
