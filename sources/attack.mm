@@ -81,6 +81,7 @@ static vm_map_offset_t GetGameModule_Base(char* GameProcessName) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             pid_t pid = GetGameProcesspid((char*)"VNID");
             if (pid) {
+                UIWindow *keyWindow;
                 for (UIWindowScene *scene in [UIApplication sharedApplication].connectedScenes) {
                     if ([scene isKindOfClass:[UIWindowScene class]]) {
                         for (UIWindow *window in scene.windows) {
