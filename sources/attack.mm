@@ -47,17 +47,17 @@ static pid_t GetGameProcesspid(char* GameProcessName) {
     return  -1;
 }
 
-static vm_map_offset_t GetGameModule_Base(char* GameProcessName) {
-    vm_map_offset_t vmoffset = 0;
-    vm_map_size_t vmsize = 0;
-    uint32_t nesting_depth = 0;
-    struct vm_region_submap_info_64 vbr;
-    mach_msg_type_number_t vbrcount = 16;
-    pid_t pid = GetGameProcesspid(GameProcessName);
-    mach_port_t get_task;
-    kern_return_t kret = task_for_pid(mach_task_self(), pid, &get_task);
-    if (kret == KERN_SUCCESS) {
-        mach_vm_region_recurse(get_task, &vmoffset, &vmsize, &nesting_depth, (vm_region_recurse_info_t)&vbr, &vbrcount);
-    }
-    return vmoffset;
-}
+// static vm_map_offset_t GetGameModule_Base(char* GameProcessName) {
+//     vm_map_offset_t vmoffset = 0;
+//     vm_map_size_t vmsize = 0;
+//     uint32_t nesting_depth = 0;
+//     struct vm_region_submap_info_64 vbr;
+//     mach_msg_type_number_t vbrcount = 16;
+//     pid_t pid = GetGameProcesspid(GameProcessName);
+//     mach_port_t get_task;
+//     kern_return_t kret = task_for_pid(mach_task_self(), pid, &get_task);
+//     if (kret == KERN_SUCCESS) {
+//         mach_vm_region_recurse(get_task, &vmoffset, &vmsize, &nesting_depth, (vm_region_recurse_info_t)&vbr, &vbrcount);
+//     }
+//     return vmoffset;
+// }
