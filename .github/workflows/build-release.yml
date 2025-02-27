@@ -111,7 +111,7 @@ jobs:
           files: TrollSpeed/packages/TrollSpeed_*.tipa
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: latest
-          release_name: "Latest TIPA Release"
+          name: "Latest TIPA Release"
           body: "Download the latest `.tipa` file for TrollSpeed"
           draft: false
           prerelease: false
