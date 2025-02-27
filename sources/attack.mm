@@ -81,13 +81,23 @@ static vm_map_offset_t GetGameModule_Base(char* GameProcessName) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             pid_t pid = GetGameProcesspid((char*)"VNID");
             if (pid) {
+                for (UIWindowScene *scene in [UIApplication sharedApplication].connectedScenes) {
+                    if ([scene isKindOfClass:[UIWindowScene class]]) {
+                        for (UIWindow *window in scene.windows) {
+                            if (window.isKeyWindow) {
+                                keyWindow = window;
+                                break;
+                            }
+                        }
+                    }
+                }
                 NSLog(@"=================================================%d", pid);
                 //  show pid on view
                 UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
                 label.text = [NSString stringWithFormat:@"%d", pid];
                 label.textColor = [UIColor redColor];
                 label.font = [UIFont systemFontOfSize:20];
-                [[UIApplication sharedApplication].keyWindow.rootViewController.view addSubview:label];
+                [keyWindow addSubview:label];
             }
         });
     }];
