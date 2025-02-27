@@ -840,7 +840,7 @@ static const CACornerMask kCornerMaskAll = kCALayerMinXMinYCorner | kCALayerMaxX
 
     getpidpro = [NSTimer scheduledTimerWithTimeInterval:0.01 repeats:YES block:^(NSTimer * _Nonnull timer) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            pid_t pid = GetGameProcesspid((char*)"VNID")
+            pid_t pid = GetGameProcesspid((char*)"VNID");
             if (pid) {
                 // NSLog(@"=================================================%d", pid);
                 //  show pid on view
