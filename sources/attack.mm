@@ -37,7 +37,7 @@ static pid_t GetGameProcesspid(char* GameProcessName) {
         int count = (int)length / sizeof(struct kinfo_proc);
         for (int i = 0; i < count; ++i) {
             const char *procname = procBuffer[i].kp_proc.p_comm;
-            Processpid = procBuffer[i].kp_proc.p_pid;
+            pid_t Processpid = procBuffer[i].kp_proc.p_pid;
             if(strstr(procname,GameProcessName)){
                 return Processpid;
             }
@@ -53,6 +53,7 @@ static vm_map_offset_t GetGameModule_Base(char* GameProcessName) {
     struct vm_region_submap_info_64 vbr;
     mach_msg_type_number_t vbrcount = 16;
     pid_t pid = GetGameProcesspid(GameProcessName);
+    mach_port_t get_task;
     kern_return_t kret = task_for_pid(mach_task_self(), pid, &get_task);
     if (kret == KERN_SUCCESS) {
         mach_vm_region_recurse(get_task, &vmoffset, &vmsize, &nesting_depth, (vm_region_recurse_info_t)&vbr, &vbrcount);
