@@ -1,3 +1,7 @@
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function"
+#pragma clang diagnostic ignored "-Werror=unused-function"
+
 #import <mach-o/dyld.h>
 #import <mach-o/loader.h>
 #import <mach-o/getsect.h>
