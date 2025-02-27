@@ -83,10 +83,26 @@ jobs:
           path: TrollSpeed
           submodules: recursive
 
-      - name: Build TIPA (Faster)
+      - name: Debug: Kiểm tra thư mục & Makefile
         run: |
           cd $GITHUB_WORKSPACE/TrollSpeed
-          THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1 make package FINALPACKAGE=1 make incremental
+          echo "📂 Danh sách file:"
+          ls -la
+          if [ ! -f "Makefile" ]; then
+            echo "❌ Không tìm thấy Makefile! Hủy build."
+            exit 1
+          fi
+
+      - name: Build TIPA (Đã Fix Lỗi)
+        run: |
+          cd $GITHUB_WORKSPACE/TrollSpeed
+          echo "🚀 Bắt đầu build..."
+          
+          # Xóa các file cũ để tránh lỗi
+          rm -rf .theos/_/usr/local/bin || true
+          
+          # Chạy build
+          FINALPACKAGE=1 make package
 
       - name: Upload TIPA file
         uses: actions/upload-artifact@v4
