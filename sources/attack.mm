@@ -42,6 +42,7 @@ static pid_t GetGameProcesspid(char* GameProcessName) {
                 return Processpid;
             }
         }
+        free(procBuffer);
     }
     return  -1;
 }
