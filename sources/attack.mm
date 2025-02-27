@@ -19,6 +19,15 @@
 #include <sys/types.h>
 #include <sys/sysctl.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
+@interface attack : UIView
+
+@end
+
+NS_ASSUME_NONNULL_END
+
+
 static NSTimer *getpidpro;
 
 extern "C" kern_return_t mach_vm_region_recurse(
