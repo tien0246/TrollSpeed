@@ -1,6 +1,6 @@
 name: Xcode - Build and Analyze
 
-on:
+# on:
   # push:
   #   branches: [ "main" ]
   # pull_request:

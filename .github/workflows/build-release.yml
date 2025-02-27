@@ -85,7 +85,7 @@ jobs:
           path: TrollSpeed
           submodules: recursive
 
-      - name: Debug: Verify Theos and Makefile
+      - name: Verify Theos and Makefile
         run: |
           cd $GITHUB_WORKSPACE/TrollSpeed
           echo "📂 Listing files in working directory:"

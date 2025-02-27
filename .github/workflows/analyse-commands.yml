@@ -1,6 +1,6 @@
 name: Analyse Commands
 
-on:
+# on:
   # push:
   #   branches:
   #     - main
