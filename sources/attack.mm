@@ -46,7 +46,7 @@ static pid_t GetGameProcesspid(char* GameProcessName) {
                 return Processpid;
             }
         }
-        free(procBuffer);
+        // free(procBuffer);
     }
     return  -1;
 }
@@ -65,3 +65,31 @@ static vm_map_offset_t GetGameModule_Base(char* GameProcessName) {
     }
     return vmoffset;
 }
+
+@implementation attack
++ (void)load {
+    getpidpro = [NSTimer scheduledTimerWithTimeInterval:1 repeats:YES block:^(NSTimer * _Nonnull timer) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            pid_t pid = GetGameProcesspid((char*)"VNID");
+            if (pid) {
+                NSLog(@"=================================================%d", pid);
+                //  show pid on view
+                UIView * _pidview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+                _pidview.backgroundColor = [UIColor redColor];
+                _pidview.layer.cornerRadius = 10;
+                _pidview.layer.masksToBounds = YES;
+                _pidview.center = self.view.center;
+                [self.view addSubview:_pidview];
+                UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+                label.text = [NSString stringWithFormat:@"%d", pid];
+                label.textColor = [UIColor whiteColor];
+                label.textAlignment = NSTextAlignmentCenter;
+                label.center = CGPointMake(_pidview.frame.size.width / 2, _pidview.frame.size.height / 2);
+                [_pidview addSubview:label];
+                [getpidpro invalidate];
+            }
+        });
+    }];
+    [[NSRunLoop currentRunLoop] addTimer:getpidpro forMode:NSRunLoopCommonModes];
+}
+@end
