@@ -35,15 +35,20 @@ jobs:
       - name: Checkout Theos
         uses: actions/checkout@v4
         with:
-          repository: XXTouchNG/theos
-          ref: 78ee784d8d3238982c9abdc58cd39919263648b1
+          repository: theos/theos
+          ref: master
           path: theos
           submodules: recursive
 
-      - name: Set up Theos
+      - name: Manually Install Theos SDKs
         run: |
-          rm -rf $GITHUB_WORKSPACE/theos/sdks
+          cd $GITHUB_WORKSPACE/theos
+          mkdir -p sdks
+          curl -LO https://github.com/theos/sdks/raw/master/iPhoneOS16.2.sdk.tar.xz
+          tar -xf iPhoneOS16.2.sdk.tar.xz -C sdks
+          rm iPhoneOS16.2.sdk.tar.xz
           echo "THEOS=$GITHUB_WORKSPACE/theos" >> $GITHUB_ENV
+          echo "SDKROOT=$GITHUB_WORKSPACE/theos/sdks/iPhoneOS16.2.sdk" >> $GITHUB_ENV
 
       - name: Checkout source
         uses: actions/checkout@v4
@@ -53,15 +58,10 @@ jobs:
           path: TrollSpeed
           submodules: recursive
 
-      - name: Build TIPA (Optimized)
+      - name: Build TIPA (Fixed)
         run: |
           cd $GITHUB_WORKSPACE/TrollSpeed
           echo "🚀 Starting fast build..."
-          
-          # Remove unnecessary files
-          rm -rf .theos/_/usr/local/bin || true
-
-          # Build package
           THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1 make package
 
       - name: Upload TIPA to GitHub Releases
