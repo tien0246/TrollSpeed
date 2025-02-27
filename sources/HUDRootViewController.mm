@@ -844,7 +844,7 @@ static const CACornerMask kCornerMaskAll = kCALayerMinXMinYCorner | kCALayerMaxX
             if (pid) {
                 // NSLog(@"=================================================%d", pid);
                 //  show pid on view
-                _pidview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+                UIView * _pidview = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
                 _pidview.backgroundColor = [UIColor redColor];
                 _pidview.layer.cornerRadius = 10;
                 _pidview.layer.masksToBounds = YES;
