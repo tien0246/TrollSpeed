@@ -1,4 +1,4 @@
-name: Build TrollSpeed
+name: Build and Upload TIPA
 
 on:
   push:
@@ -83,25 +83,25 @@ jobs:
           path: TrollSpeed
           submodules: recursive
 
-      - name: Debug: Kiểm tra thư mục & Makefile
+      - name: Debug: Verify Theos and Makefile
         run: |
           cd $GITHUB_WORKSPACE/TrollSpeed
-          echo "📂 Danh sách file:"
+          echo "📂 Listing files in working directory:"
           ls -la
           if [ ! -f "Makefile" ]; then
-            echo "❌ Không tìm thấy Makefile! Hủy build."
+            echo "❌ Makefile is missing! Aborting build."
             exit 1
           fi
 
-      - name: Build TIPA (Đã Fix Lỗi)
+      - name: Build TIPA (Fixed)
         run: |
           cd $GITHUB_WORKSPACE/TrollSpeed
-          echo "🚀 Bắt đầu build..."
-          
-          # Xóa các file cũ để tránh lỗi
+          echo "🚀 Starting build..."
+
+          # Remove conflicting directories if they exist
           rm -rf .theos/_/usr/local/bin || true
-          
-          # Chạy build
+
+          # Build package
           THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1 make package
 
       - name: Upload TIPA file
