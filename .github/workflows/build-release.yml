@@ -1,4 +1,4 @@
-name: Build and Upload TIPA
+name: Fast Build and Direct Download
 
 on:
   push:
@@ -13,7 +13,7 @@ env:
 
 jobs:
   build:
-    name: Build and Upload TIPA
+    name: Build & Upload TIPA
     runs-on: macos-13
 
     steps:
@@ -27,35 +27,12 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Cache Theos and Dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/Library/Caches/Homebrew
-            ~/.theos
-            ${{ github.workspace }}/theos
-          key: ${{ runner.os }}-theos-${{ hashFiles('**/Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-theos-
-
       - name: Install Homebrew dependencies
         run: |
-          HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 brew install dpkg make libplist openssl@3
+          brew install dpkg make libplist openssl@3 ldid
           echo "/usr/local/opt/make/libexec/gnubin" >> $GITHUB_PATH
 
-      - name: Checkout ldid
-        uses: actions/checkout@v4
-        with:
-          repository: Lessica/ldid
-          ref: master
-          path: ldid
-
-      - name: Build ldid
-        run: |
-          cd $GITHUB_WORKSPACE/ldid
-          make install
-
-      - name: Checkout XXTouchNG/theos
+      - name: Checkout Theos
         uses: actions/checkout@v4
         with:
           repository: XXTouchNG/theos
@@ -63,17 +40,10 @@ jobs:
           path: theos
           submodules: recursive
 
-      - name: Add THEOS environment variables
+      - name: Set up Theos
         run: |
           rm -rf $GITHUB_WORKSPACE/theos/sdks
           echo "THEOS=$GITHUB_WORKSPACE/theos" >> $GITHUB_ENV
-
-      - name: Checkout theos/sdks
-        uses: actions/checkout@v4
-        with:
-          repository: theos/sdks
-          ref: master
-          path: ${{ env.THEOS }}/sdks
 
       - name: Checkout source
         uses: actions/checkout@v4
@@ -83,29 +53,24 @@ jobs:
           path: TrollSpeed
           submodules: recursive
 
-      - name: Verify Theos and Makefile
+      - name: Build TIPA (Optimized)
         run: |
           cd $GITHUB_WORKSPACE/TrollSpeed
-          echo "📂 Listing files in working directory:"
-          ls -la
-          if [ ! -f "Makefile" ]; then
-            echo "❌ Makefile is missing! Aborting build."
-            exit 1
-          fi
-
-      - name: Build TIPA (Fixed)
-        run: |
-          cd $GITHUB_WORKSPACE/TrollSpeed
-          echo "🚀 Starting build..."
-
-          # Remove conflicting directories if they exist
+          echo "🚀 Starting fast build..."
+          
+          # Remove unnecessary files
           rm -rf .theos/_/usr/local/bin || true
 
           # Build package
           THEOS_PACKAGE_SCHEME=rootless FINALPACKAGE=1 make package
 
-      - name: Upload TIPA file
-        uses: actions/upload-artifact@v4
+      - name: Upload TIPA to GitHub Releases
+        uses: softprops/action-gh-release@v1
         with:
-          name: TrollSpeed_TIPA
-          path: TrollSpeed/packages/TrollSpeed_*.tipa
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: TrollSpeed/packages/TrollSpeed_*.tipa
+          tag_name: latest
+          name: "TrollSpeed Latest Build"
+          body: "Click below to download the latest TIPA file."
+          draft: false
+          prerelease: false
